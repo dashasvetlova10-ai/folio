@@ -262,7 +262,13 @@ export function EntryEditor({
                           </button>
                         ))}
                       </div>
-                      <button type="button" onClick={() => { setUserId(userId); setCropBlockId(block.id); }}
+                      <button type="button" onClick={async () => {
+                        if (!userId) {
+                          const { data: { user } } = await createClient().auth.getUser();
+                          if (user) setUserId(user.id);
+                        }
+                        setCropBlockId(block.id);
+                      }}
                         className="px-2 h-6 rounded bg-black/40 text-white text-[10px] font-medium hover:bg-black/60">Crop</button>
                     </div>
                   </div>

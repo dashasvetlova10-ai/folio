@@ -45,11 +45,19 @@ export function ImageCropModal({ url, userId, onDone, onCancel }: ImageCropModal
     );
 
     setApplying(true);
-    canvas.toBlob(async (blob) => {
+    try {
+      const blob = await new Promise<Blob | null>((res) =>
+        canvas.toBlob(res, "image/jpeg", 0.92)
+      );
       if (!blob) { setApplying(false); return; }
 
       const supabase = createClient();
-      const path = `${userId}/${Date.now()}_cropped.jpg`;
+      let uid = userId;
+      if (!uid) {
+        const { data: { user } } = await supabase.auth.getUser();
+        uid = user?.id ?? "unknown";
+      }
+      const path = `${uid}/${Date.now()}_cropped.jpg`;
       const { error } = await supabase.storage
         .from("entry-images")
         .upload(path, blob, { contentType: "image/jpeg" });
@@ -60,8 +68,10 @@ export function ImageCropModal({ url, userId, onDone, onCancel }: ImageCropModal
           .getPublicUrl(path);
         onDone(publicUrl);
       }
-      setApplying(false);
-    }, "image/jpeg", 0.92);
+    } catch (err) {
+      console.error("Crop failed:", err);
+    }
+    setApplying(false);
   }, [completedCrop, userId, onDone]);
 
   return (
@@ -89,6 +99,7 @@ export function ImageCropModal({ url, userId, onDone, onCancel }: ImageCropModal
               ref={imgRef}
               src={url}
               alt=""
+              crossOrigin="anonymous"
               className="max-h-[420px] object-contain"
             />
           </ReactCrop>
