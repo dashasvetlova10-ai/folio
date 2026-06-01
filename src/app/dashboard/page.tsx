@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatDate, todayISO } from "@/lib/utils/date";
 import { COVER_COLORS, TYPE_LABELS } from "@/lib/collections";
+import { DashboardCalendar } from "@/components/dashboard-calendar";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: entries }, { data: collections }] = await Promise.all([
+  const [{ data: entries }, { data: collections }, { data: allDates }] = await Promise.all([
     supabase
       .from("entries")
       .select("*")
@@ -22,17 +23,23 @@ export default async function DashboardPage() {
       .eq("user_id", user!.id)
       .order("created_at", { ascending: false })
       .limit(10),
+    supabase
+      .from("entries")
+      .select("id, date")
+      .eq("user_id", user!.id),
   ]);
 
   const today = todayISO();
   const todayEntry = entries?.find((e) => e.date === today);
   const pastEntries = entries?.filter((e) => e.date !== today) ?? [];
-
   const name = user?.user_metadata?.full_name?.split(" ")[0] ?? "there";
+
+  // Build date → entry id map for the calendar
+  const entryMap: Record<string, string> = {};
+  for (const e of allDates ?? []) entryMap[e.date] = e.id;
 
   return (
     <main className="min-h-screen flex flex-col">
-      {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-5 border-b border-border/50 sticky top-0 bg-background/95 backdrop-blur z-10">
         <Link href="/dashboard" className="font-serif text-2xl font-bold tracking-tight">
           Folio
@@ -111,6 +118,11 @@ export default async function DashboardPage() {
               </div>
             </Link>
           )}
+        </section>
+
+        {/* Calendar */}
+        <section>
+          <DashboardCalendar entryMap={entryMap} today={today} />
         </section>
 
         {/* Past entries */}
