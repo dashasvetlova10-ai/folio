@@ -5,6 +5,7 @@ import Link from "next/link";
 import { formatDate, todayISO } from "@/lib/utils/date";
 import { COVER_COLORS, TYPE_LABELS } from "@/lib/collections";
 import { DashboardCalendar } from "@/components/dashboard-calendar";
+import { AiChat } from "@/components/ai-chat";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -157,6 +158,7 @@ export default async function DashboardPage() {
           </p>
         )}
       </div>
+      <AiChat />
     </main>
   );
 }
