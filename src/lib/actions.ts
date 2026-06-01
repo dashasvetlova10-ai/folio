@@ -30,21 +30,26 @@ export async function saveEntry(formData: FormData) {
 
   const id = formData.get("id") as string | null;
   const title = formData.get("title") as string;
-  const content = formData.get("content") as string;
   const mood = formData.get("mood") as string | null;
   const date = formData.get("date") as string;
-  const images = JSON.parse((formData.get("images") as string) || "[]");
+  const blocks = JSON.parse((formData.get("blocks") as string) || "[]");
+  // Derive content and images from blocks for backwards-compat display
+  const content = blocks
+    .filter((b: {type: string}) => b.type === "text")
+    .map((b: {content: string}) => b.content)
+    .join("\n\n") || (formData.get("content") as string) || "";
+  const images = blocks.filter((b: {type: string}) => b.type === "image");
 
   if (id) {
     await supabase
       .from("entries")
-      .update({ title, content, mood, images, updated_at: new Date().toISOString() })
+      .update({ title, content, mood, images, blocks, updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", user.id);
   } else {
     const { data: newEntry } = await supabase
       .from("entries")
-      .insert({ user_id: user.id, title, content, mood, date, images })
+      .insert({ user_id: user.id, title, content, mood, date, images, blocks })
       .select("id")
       .single();
 

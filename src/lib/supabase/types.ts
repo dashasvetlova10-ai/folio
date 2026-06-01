@@ -12,6 +12,7 @@ export interface Database {
           mood: string | null;
           date: string;
           images: Array<{ url: string; size: string }>;
+          blocks: Json;
           created_at: string;
           updated_at: string;
         };
@@ -23,6 +24,7 @@ export interface Database {
           mood?: string | null;
           date: string;
           images?: Array<{ url: string; size: string }>;
+          blocks?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -34,6 +36,7 @@ export interface Database {
           mood?: string | null;
           date?: string;
           images?: Array<{ url: string; size: string }>;
+          blocks?: Json;
           updated_at?: string;
         };
         Relationships: [];
