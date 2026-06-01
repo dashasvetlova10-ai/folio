@@ -340,11 +340,16 @@ export function EntryEditor({
         </div>
 
         <div className="flex items-center justify-between px-10 py-4 border-t border-gray-100">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <span className="text-xs text-gray-400">{wordCount} {wordCount === 1 ? "word" : "words"}</span>
             <span className="text-xs text-gray-300">·</span>
             <span className="text-xs text-gray-400">≈ {pageCount} {pageCount === 1 ? "page" : "pages"}</span>
             {saved && <><span className="text-xs text-gray-300">·</span><span className="text-xs text-green-500">Saved ✓</span></>}
+            <span className="text-xs text-gray-300">·</span>
+            <AddPhotoButton
+              loading={uploading === blocks.length - 1}
+              onFiles={(f) => addImageAfter(blocks.length - 1, f)}
+            />
           </div>
           <Button type="submit" disabled={isPending || uploading !== null}
             className="rounded-full px-6 bg-gray-900 hover:bg-gray-700 text-white text-sm">
@@ -352,6 +357,20 @@ export function EntryEditor({
           </Button>
         </div>
       </form>
+    </>
+  );
+}
+
+function AddPhotoButton({ onFiles, loading }: { onFiles: (f: FileList | null) => void; loading: boolean }) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <button type="button" onClick={() => ref.current?.click()} disabled={loading}
+        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 transition-colors disabled:opacity-50">
+        <span className="text-base leading-none">◎</span>
+        {loading ? "uploading..." : "Add photo"}
+      </button>
+      <input ref={ref} type="file" accept="image/*" multiple className="hidden" onChange={(e) => onFiles(e.target.files)} />
     </>
   );
 }
