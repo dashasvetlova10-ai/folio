@@ -20,8 +20,20 @@ const WORDS_PER_PAGE = 200;
 const SNAP_POINTS = [25, 33, 50, 66, 75, 100];
 
 type TextBlock  = { id: string; type: "text";  content: string };
-type ImageBlock = { id: string; type: "image"; url: string; width: number }; // width = 20–100 (%)
+type ImageBlock = { id: string; type: "image"; url: string; width: number; height: number | null };
 type Block = TextBlock | ImageBlock;
+
+// dx/dy: direction multiplier for each handle
+const HANDLES = [
+  { id: "nw", style: { top: -4, left:  -4 }, cursor: "nwse-resize", dx: -1, dy: -1 },
+  { id: "n",  style: { top: -4, left: "50%", transform: "translateX(-50%)" }, cursor: "ns-resize",   dx:  0, dy: -1 },
+  { id: "ne", style: { top: -4, right: -4 }, cursor: "nesw-resize", dx:  1, dy: -1 },
+  { id: "e",  style: { top: "50%", right: -4, transform: "translateY(-50%)" }, cursor: "ew-resize",   dx:  1, dy:  0 },
+  { id: "se", style: { bottom: -4, right: -4 }, cursor: "nwse-resize", dx:  1, dy:  1 },
+  { id: "s",  style: { bottom: -4, left: "50%", transform: "translateX(-50%)" }, cursor: "ns-resize",   dx:  0, dy:  1 },
+  { id: "sw", style: { bottom: -4, left:  -4 }, cursor: "nesw-resize", dx: -1, dy:  1 },
+  { id: "w",  style: { top: "50%", left:  -4, transform: "translateY(-50%)" }, cursor: "ew-resize",   dx: -1, dy:  0 },
+] as const;
 
 function uid() { return Math.random().toString(36).slice(2); }
 
@@ -30,6 +42,8 @@ function sizeToWidth(size: string): number {
   if (size === "md") return 50;
   return 100;
 }
+
+const MIN_HEIGHT = 60;
 
 function snap(pct: number): number {
   const close = SNAP_POINTS.find((s) => Math.abs(s - pct) <= 3);
@@ -50,6 +64,7 @@ function initBlocks(
           type: "image" as const,
           url: b.url as string,
           width: (b.width as number) ?? sizeToWidth((b.size as string) ?? "lg"),
+          height: (b.height as number | null) ?? null,
         };
       }
       return { id: (b.id as string) || uid(), type: "text" as const, content: (b.content as string) || "" };
@@ -58,7 +73,7 @@ function initBlocks(
   const blocks: Block[] = [];
   if (content) blocks.push({ id: uid(), type: "text", content });
   for (const img of images) {
-    blocks.push({ id: uid(), type: "image", url: img.url, width: img.width ?? sizeToWidth(img.size ?? "lg") });
+    blocks.push({ id: uid(), type: "image", url: img.url, width: img.width ?? sizeToWidth(img.size ?? "lg"), height: null });
   }
   if (blocks.length === 0) blocks.push({ id: uid(), type: "text", content: "" });
   return blocks;
@@ -127,6 +142,10 @@ export function EntryEditor({
     setBlocks((prev) => prev.map((b) => b.id === id && b.type === "image" ? { ...b, width } : b));
   }
 
+  function setImageHeight(id: string, height: number | null) {
+    setBlocks((prev) => prev.map((b) => b.id === id && b.type === "image" ? { ...b, height } : b));
+  }
+
   function removeBlock(id: string) {
     setBlocks((prev) => {
       const next = prev.filter((b) => b.id !== id);
@@ -146,19 +165,28 @@ export function EntryEditor({
     });
   }
 
-  function startResize(e: React.MouseEvent, blockId: string) {
+  function startResize(e: React.MouseEvent, blockId: string, dx: number, dy: number) {
     e.preventDefault();
     e.stopPropagation();
     const el = blockRefs.current.get(blockId);
     if (!el) return;
     const parentWidth = el.parentElement?.offsetWidth ?? el.offsetWidth;
     const startX = e.clientX;
-    const startPx = el.offsetWidth;
+    const startY = e.clientY;
+    const startW = el.offsetWidth;
+    const startH = el.offsetHeight;
 
     const onMove = (ev: MouseEvent) => {
-      const delta = ev.clientX - startX;
-      const raw = Math.round(Math.max(20, Math.min(100, (startPx + delta) / parentWidth * 100)));
-      setImageWidth(blockId, snap(raw));
+      if (dx !== 0) {
+        const deltaX = (ev.clientX - startX) * dx;
+        const raw = Math.round(Math.max(20, Math.min(100, (startW + deltaX) / parentWidth * 100)));
+        setImageWidth(blockId, snap(raw));
+      }
+      if (dy !== 0) {
+        const deltaY = (ev.clientY - startY) * dy;
+        const newH = Math.max(MIN_HEIGHT, Math.round(startH + deltaY));
+        setImageHeight(blockId, newH);
+      }
     };
     const onUp = () => {
       window.removeEventListener("mousemove", onMove);
@@ -182,7 +210,7 @@ export function EntryEditor({
       const { error } = await supabase.storage.from("entry-images").upload(path, file);
       if (!error) {
         const { data: { publicUrl } } = supabase.storage.from("entry-images").getPublicUrl(path);
-        newBlocks.push({ id: uid(), type: "image", url: publicUrl, width: 100 });
+        newBlocks.push({ id: uid(), type: "image", url: publicUrl, width: 100, height: null });
       }
     }
     setBlocks((prev) => {
@@ -260,10 +288,13 @@ export function EntryEditor({
                     src={block.url}
                     alt=""
                     className="w-full rounded-xl shadow-sm object-cover pointer-events-none"
-                    style={{ aspectRatio: block.width >= 90 ? "16/9" : "1/1" }}
+                    style={{
+                      height: block.height ? block.height : undefined,
+                      aspectRatio: block.height ? undefined : (block.width >= 90 ? "16/9" : "1/1"),
+                    }}
                   />
 
-                  {/* Top controls (move + remove) */}
+                  {/* Top controls */}
                   <div className="absolute top-2 left-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button type="button" onClick={() => moveBlock(block.id, -1)}
                       className="w-6 h-6 bg-black/50 text-white rounded flex items-center justify-center text-xs hover:bg-black/70">↑</button>
@@ -273,31 +304,33 @@ export function EntryEditor({
                   <button type="button" onClick={() => removeBlock(block.id)}
                     className="absolute top-2 right-2 w-6 h-6 bg-black/60 text-white rounded-full flex items-center justify-center text-sm leading-none opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80">×</button>
 
-                  {/* Crop button */}
-                  <button type="button"
-                    onClick={async () => {
-                      if (!userId) {
-                        const { data: { user } } = await createClient().auth.getUser();
-                        if (user) setUserId(user.id);
-                      }
-                      setCropBlockId(block.id);
-                    }}
-                    className="absolute bottom-2 left-2 px-2 h-6 rounded bg-black/40 text-white text-[10px] font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60">
-                    Crop
-                  </button>
-
-                  {/* Width label */}
-                  <div className="absolute bottom-2 right-10 px-1.5 h-5 rounded bg-black/30 text-white text-[10px] flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    {block.width}%
+                  {/* Crop + size label */}
+                  <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button type="button"
+                      onClick={async () => {
+                        if (!userId) {
+                          const { data: { user } } = await createClient().auth.getUser();
+                          if (user) setUserId(user.id);
+                        }
+                        setCropBlockId(block.id);
+                      }}
+                      className="px-2 h-6 rounded bg-black/40 text-white text-[10px] font-medium hover:bg-black/60">
+                      Crop
+                    </button>
+                    <span className="px-1.5 h-5 rounded bg-black/30 text-white text-[10px] flex items-center">
+                      {block.width}%{block.height ? ` · ${block.height}px` : ""}
+                    </span>
                   </div>
 
-                  {/* Resize handle — right edge */}
-                  <div
-                    onMouseDown={(e) => startResize(e, block.id)}
-                    className="absolute top-0 right-0 bottom-0 w-4 cursor-ew-resize flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <div className="w-1 h-10 bg-white/80 rounded-full shadow-md" />
-                  </div>
+                  {/* 8 resize handles */}
+                  {HANDLES.map((h) => (
+                    <div
+                      key={h.id}
+                      onMouseDown={(e) => startResize(e, block.id, h.dx, h.dy)}
+                      className="absolute w-3 h-3 bg-white border-2 border-gray-400 rounded-sm shadow opacity-0 group-hover:opacity-100 transition-opacity hover:border-gray-700 hover:scale-125"
+                      style={{ ...h.style, cursor: h.cursor }}
+                    />
+                  ))}
                 </div>
               )}
 
