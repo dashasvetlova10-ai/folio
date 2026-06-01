@@ -95,7 +95,7 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
               {/* Blocks (or fallback to content+images) */}
               {Array.isArray(entry.blocks) && entry.blocks.length > 0 ? (
                 <div className="flex flex-col gap-4">
-                  {(entry.blocks as Array<{type: string; content?: string; url?: string; size?: string}>).map((block, bi) =>
+                  {(entry.blocks as Array<{type: string; content?: string; url?: string; size?: string; width?: number}>).map((block, bi) =>
                     block.type === "text" ? (
                       <div key={bi} className="font-serif text-[1.05rem] leading-[1.9] text-gray-800 whitespace-pre-wrap">
                         {block.content}
@@ -107,8 +107,8 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
                         alt=""
                         className="rounded-lg object-cover shadow-sm"
                         style={{
-                          width: block.size === "sm" ? "30%" : block.size === "md" ? "48%" : "100%",
-                          aspectRatio: block.size === "lg" ? "16/9" : "1/1",
+                          width: `${block.width ?? 100}%`,
+                          aspectRatio: (block.width ?? 100) >= 90 ? "16/9" : "1/1",
                         }}
                       />
                     )
