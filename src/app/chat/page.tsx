@@ -8,6 +8,13 @@ export default async function Chat() {
   const { data: { user } } = await supabase.auth.getUser();
   const name = user?.user_metadata?.full_name?.split(" ")[0] ?? "there";
 
+  const { data: conversations } = await supabase
+    .from("conversations")
+    .select("id, title, created_at")
+    .eq("user_id", user!.id)
+    .order("updated_at", { ascending: false })
+    .limit(30);
+
   return (
     <main className="min-h-screen flex flex-col bg-[oklch(0.14_0.01_60)]">
       <nav className="flex items-center justify-between px-8 py-5">
@@ -19,7 +26,7 @@ export default async function Chat() {
         </Link>
       </nav>
 
-      <ChatPage name={name} />
+      <ChatPage name={name} savedConversations={conversations ?? []} />
     </main>
   );
 }
