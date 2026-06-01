@@ -35,6 +35,37 @@ export interface Database {
         };
         Relationships: [];
       };
+      collections: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          type: string;
+          start_date: string;
+          end_date: string;
+          cover_color: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          type?: string;
+          start_date: string;
+          end_date: string;
+          cover_color?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          type?: string;
+          start_date?: string;
+          end_date?: string;
+          cover_color?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -54,3 +85,6 @@ export interface Database {
 export type Entry = Database["public"]["Tables"]["entries"]["Row"];
 export type EntryInsert = Database["public"]["Tables"]["entries"]["Insert"];
 export type EntryUpdate = Database["public"]["Tables"]["entries"]["Update"];
+
+export type Collection = Database["public"]["Tables"]["collections"]["Row"];
+export type CollectionInsert = Database["public"]["Tables"]["collections"]["Insert"];

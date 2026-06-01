@@ -65,3 +65,48 @@ export async function deleteEntry(id: string) {
   revalidatePath("/dashboard");
   redirect("/dashboard");
 }
+
+export async function createCollection(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const type = formData.get("type") as string;
+  const cover_color = formData.get("cover_color") as string;
+
+  let title: string;
+  let start_date: string;
+  let end_date: string;
+
+  if (type === "monthly") {
+    const month = parseInt(formData.get("month") as string);
+    const year = parseInt(formData.get("year") as string);
+    title = new Date(year, month - 1, 1).toLocaleString("default", { month: "long" }) + " " + year;
+    start_date = `${year}-${String(month).padStart(2, "0")}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    end_date = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+  } else {
+    title = formData.get("title") as string;
+    start_date = formData.get("start_date") as string;
+    end_date = formData.get("end_date") as string;
+  }
+
+  const { data: collection } = await supabase
+    .from("collections")
+    .insert({ user_id: user.id, title, type, start_date, end_date, cover_color })
+    .select("id")
+    .single();
+
+  revalidatePath("/dashboard");
+  if (collection) redirect(`/collections/${collection.id}`);
+}
+
+export async function deleteCollection(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await supabase.from("collections").delete().eq("id", id).eq("user_id", user.id);
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}

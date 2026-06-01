@@ -22,3 +22,23 @@ create policy "Users can manage their own entries"
   for all
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- Collections (books)
+create table public.collections (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  title text not null,
+  type text not null default 'custom',
+  start_date date not null,
+  end_date date not null,
+  cover_color text not null default 'sand',
+  created_at timestamptz default now() not null
+);
+
+alter table public.collections enable row level security;
+
+create policy "Users can manage their own collections"
+  on public.collections
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);

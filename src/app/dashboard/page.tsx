@@ -3,17 +3,26 @@ import { signOut } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatDate, todayISO } from "@/lib/utils/date";
+import { COVER_COLORS, TYPE_LABELS } from "@/lib/collections";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: entries } = await supabase
-    .from("entries")
-    .select("*")
-    .eq("user_id", user!.id)
-    .order("date", { ascending: false })
-    .limit(30);
+  const [{ data: entries }, { data: collections }] = await Promise.all([
+    supabase
+      .from("entries")
+      .select("*")
+      .eq("user_id", user!.id)
+      .order("date", { ascending: false })
+      .limit(30),
+    supabase
+      .from("collections")
+      .select("*")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false })
+      .limit(10),
+  ]);
 
   const today = todayISO();
   const todayEntry = entries?.find((e) => e.date === today);
@@ -44,6 +53,39 @@ export default async function DashboardPage() {
           <p className="text-muted-foreground text-sm mb-1">{formatDate(today)}</p>
           <h2 className="font-serif text-4xl font-bold">Good day, {name}.</h2>
         </div>
+
+        {/* My Books */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs uppercase tracking-widest text-muted-foreground font-medium">My books</h3>
+            <Link href="/collections/new">
+              <Button variant="ghost" size="sm" className="text-xs h-7 px-3">+ New book</Button>
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {(collections ?? []).map((col) => (
+              <Link key={col.id} href={`/collections/${col.id}`} className="shrink-0">
+                <div
+                  style={{ backgroundColor: COVER_COLORS[col.cover_color] ?? COVER_COLORS.sand }}
+                  className="w-28 h-40 rounded-xl flex flex-col justify-end p-3 hover:scale-105 transition-transform cursor-pointer shadow-sm"
+                >
+                  <span className="font-serif text-xs font-bold text-foreground/80 leading-snug line-clamp-2">
+                    {col.title}
+                  </span>
+                  <span className="text-[10px] text-foreground/40 mt-1 uppercase tracking-wide">
+                    {TYPE_LABELS[col.type] ?? "Journal"}
+                  </span>
+                </div>
+              </Link>
+            ))}
+            <Link href="/collections/new" className="shrink-0">
+              <div className="w-28 h-40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 hover:border-accent/50 hover:bg-muted/20 transition-colors cursor-pointer">
+                <span className="text-2xl text-muted-foreground">+</span>
+                <span className="text-xs text-muted-foreground text-center leading-snug px-2">New book</span>
+              </div>
+            </Link>
+          </div>
+        </section>
 
         {/* Today */}
         <section>
