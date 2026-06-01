@@ -11,6 +11,7 @@ export interface Database {
           content: string;
           mood: string | null;
           date: string;
+          images: string[];
           created_at: string;
           updated_at: string;
         };
@@ -21,6 +22,7 @@ export interface Database {
           content?: string;
           mood?: string | null;
           date: string;
+          images?: string[];
           created_at?: string;
           updated_at?: string;
         };
@@ -31,6 +33,7 @@ export interface Database {
           content?: string;
           mood?: string | null;
           date?: string;
+          images?: string[];
           updated_at?: string;
         };
         Relationships: [];

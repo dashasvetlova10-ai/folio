@@ -47,6 +47,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
           initialTitle={entry.title ?? ""}
           initialContent={entry.content}
           initialMood={entry.mood}
+          initialImages={entry.images ?? []}
           date={entry.date}
         />
       </div>

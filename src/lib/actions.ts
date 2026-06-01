@@ -33,17 +33,18 @@ export async function saveEntry(formData: FormData) {
   const content = formData.get("content") as string;
   const mood = formData.get("mood") as string | null;
   const date = formData.get("date") as string;
+  const images = formData.getAll("images") as string[];
 
   if (id) {
     await supabase
       .from("entries")
-      .update({ title, content, mood, updated_at: new Date().toISOString() })
+      .update({ title, content, mood, images, updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("user_id", user.id);
   } else {
     const { data: newEntry } = await supabase
       .from("entries")
-      .insert({ user_id: user.id, title, content, mood, date })
+      .insert({ user_id: user.id, title, content, mood, date, images })
       .select("id")
       .single();
 

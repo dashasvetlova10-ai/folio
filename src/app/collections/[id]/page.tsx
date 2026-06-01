@@ -68,14 +68,16 @@ export default async function CollectionPage({ params }: { params: Promise<{ id:
 
         {/* Future actions */}
         <div className="flex gap-3 mt-8">
-          <Button variant="outline" size="sm" className="rounded-full opacity-40 cursor-not-allowed" disabled>
-            Preview book
-          </Button>
+          <Link href={`/collections/${collection.id}/preview`}>
+            <Button variant="outline" size="sm" className="rounded-full">
+              Preview book
+            </Button>
+          </Link>
           <Button size="sm" className="rounded-full opacity-40 cursor-not-allowed" disabled>
             Order print
           </Button>
         </div>
-        <p className="text-xs text-foreground/30 mt-2">PDF & print coming soon</p>
+        <p className="text-xs text-foreground/30 mt-2">Print coming soon</p>
       </div>
 
       {/* Entries */}
