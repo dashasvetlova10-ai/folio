@@ -21,9 +21,9 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
   if (!entry) notFound();
 
   return (
-    <main className="min-h-screen flex flex-col">
-      <nav className="flex items-center justify-between px-8 py-5 border-b border-border/50 sticky top-0 bg-background/95 backdrop-blur z-10">
-        <Link href="/dashboard" className="font-serif text-2xl font-bold tracking-tight">
+    <main className="min-h-screen flex flex-col bg-[oklch(0.93_0.012_75)]">
+      <nav className="flex items-center justify-between px-8 py-5">
+        <Link href="/dashboard" className="font-serif text-2xl font-bold tracking-tight text-foreground">
           Folio
         </Link>
         <div className="flex items-center gap-2">
@@ -38,18 +38,33 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </div>
       </nav>
 
-      <div className="max-w-2xl mx-auto w-full px-6 py-12">
-        <p className="text-sm text-muted-foreground mb-8 uppercase tracking-widest font-medium">
-          {formatDate(entry.date)}
-        </p>
-        <EntryEditor
-          id={entry.id}
-          initialTitle={entry.title ?? ""}
-          initialContent={entry.content}
-          initialMood={entry.mood}
-          initialImages={entry.images ?? []}
-          date={entry.date}
-        />
+      <div className="flex-1 flex justify-center px-6 pb-16 pt-4">
+        <div className="w-full max-w-[620px]">
+
+          {/* Date label */}
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4 font-medium px-1">
+            {formatDate(entry.date)}
+          </p>
+
+          {/* Stacked pages effect */}
+          <div className="relative">
+            <div className="absolute inset-0 translate-x-1.5 translate-y-2 bg-white/60 rounded shadow-sm" />
+            <div className="absolute inset-0 translate-x-0.5 translate-y-1 bg-white/80 rounded shadow-sm" />
+
+            {/* Main page */}
+            <div className="relative bg-white rounded shadow-[0_8px_40px_rgba(0,0,0,0.10)]">
+              <EntryEditor
+                id={entry.id}
+                initialTitle={entry.title ?? ""}
+                initialContent={entry.content}
+                initialMood={entry.mood}
+                initialImages={entry.images ?? []}
+                date={entry.date}
+              />
+            </div>
+          </div>
+
+        </div>
       </div>
     </main>
   );
