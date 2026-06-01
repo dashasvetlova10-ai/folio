@@ -28,7 +28,7 @@ export default async function EntryPage({ params }: { params: Promise<{ id: stri
         </Link>
         <div className="flex items-center gap-2">
           <form action={deleteEntry.bind(null, entry.id)}>
-            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+            <Button type="submit" variant="ghost" size="sm" className="text-destructive hover:text-destructive">
               Delete
             </Button>
           </form>

@@ -8,7 +8,7 @@ export default function LandingPage() {
       <nav className="flex items-center justify-between px-8 py-6 border-b border-border/50">
         <span className="font-serif text-2xl font-bold tracking-tight">Folio</span>
         <form action={signInWithGoogle}>
-          <Button variant="outline" size="sm">Sign in</Button>
+          <Button type="submit" variant="outline" size="sm">Sign in</Button>
         </form>
       </nav>
 
@@ -26,7 +26,7 @@ export default function LandingPage() {
           Write every day, then print your journal as a stylish hardcover.
         </p>
         <form action={signInWithGoogle}>
-          <Button size="lg" className="text-base px-8 py-6 rounded-full font-medium">
+          <Button type="submit" size="lg" className="text-base px-8 py-6 rounded-full font-medium">
             Start writing with Google
           </Button>
         </form>

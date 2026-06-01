@@ -42,7 +42,7 @@ export default async function DashboardPage() {
             <Button size="sm">New entry</Button>
           </Link>
           <form action={signOut}>
-            <Button variant="ghost" size="sm">Sign out</Button>
+            <Button type="submit" variant="ghost" size="sm">Sign out</Button>
           </form>
         </div>
       </nav>
