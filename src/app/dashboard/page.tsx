@@ -5,7 +5,6 @@ import Link from "next/link";
 import { formatDate, todayISO } from "@/lib/utils/date";
 import { COVER_COLORS, TYPE_LABELS } from "@/lib/collections";
 import { DashboardCalendar } from "@/components/dashboard-calendar";
-import { AiChat } from "@/components/ai-chat";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -46,6 +45,9 @@ export default async function DashboardPage() {
           Folio
         </Link>
         <div className="flex items-center gap-3">
+          <Link href="/chat">
+            <Button variant="ghost" size="sm" className="gap-1.5">✦ Talk</Button>
+          </Link>
           <Link href="/entry/new">
             <Button size="sm">New entry</Button>
           </Link>
@@ -158,7 +160,6 @@ export default async function DashboardPage() {
           </p>
         )}
       </div>
-      <AiChat />
     </main>
   );
 }
