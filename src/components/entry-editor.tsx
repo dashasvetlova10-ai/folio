@@ -40,6 +40,8 @@ export function EntryEditor({
   const [uploading, setUploading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const wordCount = content.trim() === "" ? 0 : content.trim().split(/\s+/).length;
@@ -75,6 +77,30 @@ export function EntryEditor({
 
   function removeImage(index: number) {
     setImages((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function handleDragStart(index: number) {
+    setDraggingIndex(index);
+  }
+
+  function handleDragOver(e: React.DragEvent, index: number) {
+    e.preventDefault();
+    setDragOverIndex(index);
+  }
+
+  function handleDrop(index: number) {
+    if (draggingIndex === null || draggingIndex === index) return;
+    const next = [...images];
+    const [moved] = next.splice(draggingIndex, 1);
+    next.splice(index, 0, moved);
+    setImages(next);
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+  }
+
+  function handleDragEnd() {
+    setDraggingIndex(null);
+    setDragOverIndex(null);
   }
 
   function handleSave(formData: FormData) {
@@ -137,23 +163,47 @@ export function EntryEditor({
 
         {/* Photos */}
         {images.length > 0 && (
-          <div className={`grid gap-3 ${images.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
-            {images.map((url, i) => (
-              <div key={url} className="relative group">
-                <img
-                  src={url}
-                  alt=""
-                  className={`w-full object-cover rounded-lg shadow-sm ${images.length === 1 ? "aspect-video" : "aspect-square"}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImage(i)}
-                  className="absolute top-2 right-2 w-6 h-6 bg-black/60 text-white rounded-full text-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+          <div>
+            <div className={`grid gap-3 ${images.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
+              {images.map((url, i) => (
+                <div
+                  key={url}
+                  draggable
+                  onDragStart={() => handleDragStart(i)}
+                  onDragOver={(e) => handleDragOver(e, i)}
+                  onDrop={() => handleDrop(i)}
+                  onDragEnd={handleDragEnd}
+                  className={`relative group cursor-grab active:cursor-grabbing transition-all duration-150 ${
+                    draggingIndex === i ? "opacity-40 scale-95" : ""
+                  } ${
+                    dragOverIndex === i && draggingIndex !== i
+                      ? "ring-2 ring-amber-400 ring-offset-2 rounded-lg"
+                      : ""
+                  }`}
                 >
-                  ×
-                </button>
-              </div>
-            ))}
+                  <img
+                    src={url}
+                    alt=""
+                    className={`w-full object-cover rounded-lg shadow-sm pointer-events-none ${images.length === 1 ? "aspect-video" : "aspect-square"}`}
+                  />
+                  {/* Drag handle */}
+                  <div className="absolute top-2 left-2 w-6 h-6 bg-black/40 text-white rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs leading-none select-none">
+                    ⠿
+                  </div>
+                  {/* Remove */}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute top-2 right-2 w-6 h-6 bg-black/60 text-white rounded-full text-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity leading-none"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            {images.length > 1 && (
+              <p className="text-[11px] text-gray-400 mt-2">Drag to reorder</p>
+            )}
           </div>
         )}
 
