@@ -33,7 +33,7 @@ export async function saveEntry(formData: FormData) {
   const content = formData.get("content") as string;
   const mood = formData.get("mood") as string | null;
   const date = formData.get("date") as string;
-  const images = formData.getAll("images") as string[];
+  const images = JSON.parse((formData.get("images") as string) || "[]");
 
   if (id) {
     await supabase

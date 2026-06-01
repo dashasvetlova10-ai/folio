@@ -99,14 +99,17 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
 
               {/* Photos */}
               {entry.images && entry.images.length > 0 && (
-                <div className={`mt-8 grid gap-3 ${entry.images.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
-                  {entry.images.map((url: string) => (
+                <div className="mt-8 flex flex-wrap gap-3">
+                  {entry.images.map((img: { url: string; size: string }) => (
                     <img
-                      key={url}
-                      src={url}
+                      key={img.url}
+                      src={img.url}
                       alt=""
-                      className="w-full rounded-lg object-cover shadow-sm"
-                      style={{ aspectRatio: entry.images!.length === 1 ? "16/9" : "1/1" }}
+                      className="rounded-lg object-cover shadow-sm"
+                      style={{
+                        width: img.size === "sm" ? "30%" : img.size === "md" ? "48%" : "100%",
+                        aspectRatio: img.size === "lg" ? "16/9" : "1/1",
+                      }}
                     />
                   ))}
                 </div>
