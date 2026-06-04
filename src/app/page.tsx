@@ -20,7 +20,7 @@ export default function LandingPage() {
           <p className="text-xs tracking-[0.2em] uppercase text-accent font-medium mb-5">
             A journal that knows you
           </p>
-          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight mb-7">
+          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.08] tracking-tight mb-7">
             Write today.<br />
             <span className="italic">Remember<br />it forever.</span>
           </h1>
@@ -121,7 +121,7 @@ export default function LandingPage() {
         {/* Text */}
         <div className="flex-1 max-w-sm mx-auto lg:mx-0">
           <p className="text-xs tracking-[0.2em] uppercase text-accent font-medium mb-4">The journal</p>
-          <h2 className="font-serif text-4xl lg:text-5xl font-bold leading-tight mb-5">
+          <h2 className="font-serif text-4xl lg:text-5xl font-semibold leading-tight mb-5">
             Write the way<br /><span className="italic">you actually live.</span>
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-5">
@@ -171,7 +171,7 @@ export default function LandingPage() {
           {/* Text */}
           <div className="flex-1 max-w-sm mx-auto lg:mx-0 text-center lg:text-left">
             <p className="text-xs tracking-[0.2em] uppercase font-medium mb-4" style={{ color: "oklch(0.72 0.12 65)" }}>AI companion</p>
-            <h2 className="font-serif text-4xl lg:text-5xl font-bold leading-tight mb-5 text-white">
+            <h2 className="font-serif text-4xl lg:text-5xl font-semibold leading-tight mb-5 text-white">
               A friend who<br /><span className="italic">reads your journal.</span>
             </h2>
             <p className="leading-relaxed mb-5" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -187,7 +187,7 @@ export default function LandingPage() {
       {/* ── Feature: Book ── */}
       <section className="max-w-6xl mx-auto px-6 py-28 flex flex-col items-center text-center">
         <p className="text-xs tracking-[0.2em] uppercase text-accent font-medium mb-4">Print</p>
-        <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+        <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight mb-6">
           One day, you&apos;ll want<br />
           <span className="italic">to hold it.</span>
         </h2>
@@ -217,7 +217,7 @@ export default function LandingPage() {
 
       {/* ── Final CTA ── */}
       <section className="border-t border-border/50 px-6 py-28 text-center" style={{ background: "oklch(0.97 0.01 75)" }}>
-        <h2 className="font-serif text-4xl md:text-5xl font-bold mb-5">
+        <h2 className="font-serif text-4xl md:text-5xl font-semibold mb-5">
           Your story is<br /><span className="italic">already worth writing.</span>
         </h2>
         <p className="text-muted-foreground mb-10 max-w-sm mx-auto leading-relaxed">
