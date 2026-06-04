@@ -2,29 +2,31 @@ import { createClient } from "@/lib/supabase/server";
 import { ChatPage } from "@/components/chat-page";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 export default async function Chat() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const name = user?.user_metadata?.full_name?.split(" ")[0] ?? "there";
+  if (!user) redirect("/");
+  const name = user.user_metadata?.full_name?.split(" ")[0] ?? "there";
 
   const [{ data: conversations }, { data: memories }, { data: entries }] = await Promise.all([
     supabase
       .from("conversations")
       .select("id, title, created_at")
-      .eq("user_id", user!.id)
+      .eq("user_id", user.id)
       .order("updated_at", { ascending: false })
       .limit(30),
     supabase
       .from("user_memories")
       .select("fact")
-      .eq("user_id", user!.id)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(30),
     supabase
       .from("entries")
       .select("date, title, content, mood, blocks")
-      .eq("user_id", user!.id)
+      .eq("user_id", user.id)
       .order("date", { ascending: false })
       .limit(20),
   ]);

@@ -36,7 +36,7 @@ export async function saveEntry(formData: FormData) {
   // Derive content and images from blocks for backwards-compat display
   const content = blocks
     .filter((b: {type: string}) => b.type === "text")
-    .map((b: {content: string}) => b.content)
+    .map((b: {text: string}) => b.text)
     .join("\n\n") || (formData.get("content") as string) || "";
   const images = blocks.filter((b: {type: string}) => b.type === "image");
 
