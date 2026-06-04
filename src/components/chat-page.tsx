@@ -15,9 +15,9 @@ interface SavedConversation {
 }
 
 const STARTERS = [
+  "Can you look through my journal and tell me how I've been doing?",
   "I'm feeling a bit overwhelmed today",
   "Something good happened and I want to share it",
-  "I've been anxious and don't know why",
   "I just need to vent",
 ];
 
@@ -57,10 +57,12 @@ export function ChatPage({
   name,
   savedConversations,
   memories,
+  journalContext,
 }: {
   name: string;
   savedConversations: SavedConversation[];
   memories: string[];
+  journalContext: string;
 }) {
   const [view, setView] = useState<"home" | "chat">("home");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -152,7 +154,7 @@ export function ChatPage({
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages, memories }),
+        body: JSON.stringify({ messages: newMessages, memories, journalContext }),
       });
 
       const reader = res.body?.getReader();

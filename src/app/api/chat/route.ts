@@ -13,14 +13,21 @@ How to write:
 - Be genuinely curious, not clinical
 - Don't give advice unless asked
 - If it feels right, gently mention that writing it down might help
-- If someone seems really struggling, warmly suggest talking to someone they trust in real life`;
+- If someone seems really struggling, warmly suggest talking to someone they trust in real life
+- When referencing journal entries, be natural and gentle — not clinical or analytical`;
 
 export async function POST(req: Request) {
-  const { messages, memories } = await req.json();
+  const { messages, memories, journalContext } = await req.json();
 
-  const system = memories?.length
-    ? `${BASE_SYSTEM}\n\nWhat you remember about this person:\n${(memories as string[]).join("\n")}\n\nUse this naturally — don't recite it back, just let it inform how you talk with them.`
-    : BASE_SYSTEM;
+  let system = BASE_SYSTEM;
+
+  if (memories?.length) {
+    system += `\n\nWhat you remember about this person:\n${(memories as string[]).join("\n")}\n\nUse this naturally — don't recite it back, just let it inform how you talk with them.`;
+  }
+
+  if (journalContext) {
+    system += `\n\nTheir recent journal entries (most recent first):\n\n${journalContext}\n\nYou can gently reference these if it feels natural and helpful. Never quote them verbatim. Treat them as private thoughts shared in trust.`;
+  }
 
   const stream = await client.messages.stream({
     model: "claude-haiku-4-5-20251001",
