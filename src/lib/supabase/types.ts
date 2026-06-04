@@ -47,6 +47,18 @@ export interface Database {
         Update: { title?: string; messages?: Json; updated_at?: string; };
         Relationships: [];
       };
+      user_memories: {
+        Row: { id: string; user_id: string; fact: string; created_at: string; };
+        Insert: { id?: string; user_id: string; fact: string; created_at?: string; };
+        Update: { fact?: string; };
+        Relationships: [];
+      };
+      push_subscriptions: {
+        Row: { id: string; user_id: string; subscription: Json; created_at: string; };
+        Insert: { id?: string; user_id: string; subscription: Json; created_at?: string; };
+        Update: { subscription?: Json; };
+        Relationships: [];
+      };
       collections: {
         Row: {
           id: string;

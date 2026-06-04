@@ -31,7 +31,37 @@ function timeAgo(dateStr: string) {
   return days === 1 ? "yesterday" : `${days} days ago`;
 }
 
-export function ChatPage({ name, savedConversations }: { name: string; savedConversations: SavedConversation[] }) {
+async function registerPush() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.register("/sw.js");
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
+
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+    });
+
+    await fetch("/api/push/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(sub),
+    });
+  } catch {
+    // Push not supported or denied — silent fail
+  }
+}
+
+export function ChatPage({
+  name,
+  savedConversations,
+  memories,
+}: {
+  name: string;
+  savedConversations: SavedConversation[];
+  memories: string[];
+}) {
   const [view, setView] = useState<"home" | "chat">("home");
   const [messages, setMessages] = useState<Message[]>([]);
   const [convId, setConvId] = useState<string | null>(null);
@@ -48,6 +78,11 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
   useEffect(() => {
     if (view === "chat") setTimeout(() => inputRef.current?.focus(), 100);
   }, [view]);
+
+  // Register for push notifications on first visit
+  useEffect(() => {
+    registerPush();
+  }, []);
 
   async function loadConversation(conv: SavedConversation) {
     const supabase = createClient();
@@ -71,7 +106,10 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
     if (!user) return null;
 
     if (existingId) {
-      await supabase.from("conversations").update({ messages: msgs as unknown as import("@/lib/supabase/types").Json, updated_at: new Date().toISOString() }).eq("id", existingId);
+      await supabase.from("conversations").update({
+        messages: msgs as unknown as import("@/lib/supabase/types").Json,
+        updated_at: new Date().toISOString(),
+      }).eq("id", existingId);
       return existingId;
     } else {
       const title = msgs.find((m) => m.role === "user")?.content.slice(0, 60) ?? "Conversation";
@@ -84,6 +122,20 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
       }
     }
     return null;
+  }
+
+  async function extractMemories(msgs: Message[]) {
+    // Only extract if conversation has at least 3 messages
+    if (msgs.length < 3) return;
+    try {
+      await fetch("/api/extract-memory", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: msgs }),
+      });
+    } catch {
+      // Silent fail — memory extraction is non-critical
+    }
   }
 
   async function send(text?: string) {
@@ -100,7 +152,7 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({ messages: newMessages, memories }),
       });
 
       const reader = res.body?.getReader();
@@ -124,6 +176,9 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
       const savedId = await saveMessages(finalMessages, convId);
       if (savedId && !convId) setConvId(savedId);
 
+      // Extract memories in the background after every AI response
+      extractMemories(finalMessages);
+
     } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Something went wrong, try again." }]);
     } finally {
@@ -143,7 +198,7 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
           <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-2xl mb-5">✦</div>
           <h1 className="font-serif text-3xl font-bold text-white mb-2">Hi, {name}.</h1>
           <p className="text-white/50 text-sm leading-relaxed max-w-sm">
-            This is your space. Talk about how you're feeling, what's on your mind, or just share your day.
+            This is your space. Talk about how you&apos;re feeling, what&apos;s on your mind, or just share your day.
           </p>
         </div>
 
@@ -174,7 +229,7 @@ export function ChatPage({ name, savedConversations }: { name: string; savedConv
             <div className="flex flex-col gap-2">
               {convList.map((c) => (
                 <button key={c.id} onClick={() => loadConversation(c)}
-                  className="text-left px-4 py-3 rounded-xl bg-white/4 hover:bg-white/8 border border-white/8 transition-colors group"
+                  className="text-left px-4 py-3 rounded-xl border border-white/8 transition-colors group"
                   style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
                   <p className="text-sm text-white/70 group-hover:text-white/90 transition-colors truncate">{c.title}</p>
                   <p className="text-xs text-white/25 mt-0.5">{timeAgo(c.created_at)}</p>

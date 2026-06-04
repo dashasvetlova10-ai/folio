@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
 
-const SYSTEM = `You are a warm, caring friend inside Folio, a personal journal app. You listen to how people are feeling and help them reflect on their day.
+const BASE_SYSTEM = `You are a warm, caring friend inside Folio, a personal journal app. You listen to how people are feeling and help them reflect on their day.
 
 How to write:
 - Write like a real friend texting, not like an AI or therapist
@@ -16,12 +16,16 @@ How to write:
 - If someone seems really struggling, warmly suggest talking to someone they trust in real life`;
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages, memories } = await req.json();
+
+  const system = memories?.length
+    ? `${BASE_SYSTEM}\n\nWhat you remember about this person:\n${(memories as string[]).join("\n")}\n\nUse this naturally — don't recite it back, just let it inform how you talk with them.`
+    : BASE_SYSTEM;
 
   const stream = await client.messages.stream({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 512,
-    system: SYSTEM,
+    system,
     messages,
   });
 
