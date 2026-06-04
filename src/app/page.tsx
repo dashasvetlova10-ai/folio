@@ -41,25 +41,20 @@ export default function LandingPage() {
           <div className="absolute top-4 left-1/2 lg:left-8 -translate-x-1/2 lg:translate-x-0 w-72 h-96 bg-[oklch(0.96_0.02_75)] rounded-2xl shadow-md rotate-3" />
           {/* Main card */}
           <div className="relative z-10 w-72 bg-white rounded-2xl shadow-2xl p-7 -rotate-1">
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-4">
               <span className="text-[11px] text-muted-foreground tracking-wide uppercase">Tuesday, June 3</span>
               <span className="text-xs text-accent">✦</span>
             </div>
-            {/* Fake title */}
-            <div className="h-5 bg-foreground/8 rounded w-2/3 mb-5" />
-            {/* Fake photo — warm rectangle */}
-            <div className="h-28 rounded-xl mb-5 overflow-hidden" style={{ background: "oklch(0.90 0.04 75)" }}>
+            {/* Title */}
+            <p className="font-serif text-base font-semibold text-foreground mb-3">A slow morning in Lisbon</p>
+            {/* Photo */}
+            <div className="h-28 rounded-xl mb-4 overflow-hidden">
               <div className="w-full h-full" style={{ background: "linear-gradient(135deg, oklch(0.88 0.05 75) 0%, oklch(0.82 0.07 55) 100%)" }} />
             </div>
-            {/* Fake text lines */}
-            <div className="space-y-2.5">
-              <div className="h-3 bg-foreground/6 rounded w-full" />
-              <div className="h-3 bg-foreground/6 rounded w-5/6" />
-              <div className="h-3 bg-foreground/6 rounded w-full" />
-              <div className="h-3 bg-foreground/6 rounded w-3/4" />
-              <div className="h-3 bg-foreground/6 rounded w-full" />
-              <div className="h-3 bg-foreground/6 rounded w-2/3" />
-            </div>
+            {/* Real journal text */}
+            <p className="text-[12px] text-foreground/60 leading-relaxed">
+              Woke up before everyone else. The city was quiet — just pigeons and the smell of coffee from somewhere below. I sat by the window for almost an hour and didn&apos;t check my phone once.
+            </p>
           </div>
         </div>
       </section>
@@ -94,26 +89,21 @@ export default function LandingPage() {
             </div>
             <div className="p-6">
               {/* Title */}
-              <div className="h-6 bg-foreground/8 rounded w-1/2 mb-2" />
-              <div className="h-3 bg-foreground/4 rounded w-1/4 mb-7" />
+              <p className="font-serif text-base font-semibold text-foreground mb-1">First day in the mountains</p>
+              <p className="text-[10px] text-muted-foreground mb-5 uppercase tracking-wide">Saturday, May 24</p>
               {/* Text block */}
-              <div className="space-y-2 mb-6">
-                <div className="h-3 bg-foreground/6 rounded w-full" />
-                <div className="h-3 bg-foreground/6 rounded w-5/6" />
-                <div className="h-3 bg-foreground/6 rounded w-full" />
-              </div>
+              <p className="text-[11px] text-foreground/60 leading-relaxed mb-5">
+                The drive up took three hours but none of it felt long. Every turn had a different view.
+              </p>
               {/* Side-by-side: text + photo */}
-              <div className="flex gap-4 mb-6">
-                <div className="flex-1 space-y-2">
-                  <div className="h-3 bg-foreground/6 rounded w-full" />
-                  <div className="h-3 bg-foreground/6 rounded w-4/5" />
-                  <div className="h-3 bg-foreground/6 rounded w-full" />
-                  <div className="h-3 bg-foreground/6 rounded w-3/5" />
-                </div>
+              <div className="flex gap-3 mb-4">
+                <p className="flex-1 text-[11px] text-foreground/60 leading-relaxed">
+                  We stopped at a tiny café that had no menu — just whatever they made that morning. It was the best soup I&apos;ve ever had.
+                </p>
                 <div className="w-24 h-20 rounded-lg shrink-0" style={{ background: "linear-gradient(135deg, oklch(0.88 0.05 75) 0%, oklch(0.80 0.08 55) 100%)" }} />
               </div>
               {/* Full-width photo */}
-              <div className="w-full h-24 rounded-lg" style={{ background: "linear-gradient(135deg, oklch(0.85 0.06 200) 0%, oklch(0.78 0.08 240) 100%)" }} />
+              <div className="w-full h-20 rounded-lg" style={{ background: "linear-gradient(135deg, oklch(0.85 0.06 200) 0%, oklch(0.78 0.08 240) 100%)" }} />
             </div>
           </div>
         </div>
