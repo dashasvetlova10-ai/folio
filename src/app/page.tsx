@@ -136,17 +136,17 @@ export default function LandingPage() {
               <div className="p-5 space-y-4">
                 <div className="flex justify-start">
                   <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-sm text-sm leading-relaxed" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}>
-                    Hey, I noticed you wrote about your trip to Portugal last week. How are you feeling now that you're back?
+                    omg wait you went to portugal?? how was it, tell me everything
                   </div>
                 </div>
                 <div className="flex justify-end">
                   <div className="max-w-[80%] bg-white text-gray-900 px-4 py-3 rounded-2xl rounded-br-sm text-sm leading-relaxed">
-                    Honestly still a bit sad it's over. It felt so freeing.
+                    it was so good but now i'm back and kinda sad lol
                   </div>
                 </div>
                 <div className="flex justify-start">
                   <div className="max-w-[80%] px-4 py-3 rounded-2xl rounded-bl-sm text-sm leading-relaxed" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.85)" }}>
-                    That makes complete sense. What part did you miss the most?
+                    ugh that post-trip feeling is real 😭 what do you miss most about it?
                   </div>
                 </div>
                 <div className="flex justify-end opacity-50">
