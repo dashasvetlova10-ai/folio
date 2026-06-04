@@ -46,14 +46,14 @@ export default function LandingPage() {
               <span className="text-xs text-accent">✦</span>
             </div>
             {/* Title */}
-            <p className="font-serif text-base font-semibold text-foreground mb-3">A slow morning in Lisbon</p>
+            <p className="font-serif text-base font-semibold text-foreground mb-3">tuesday 🌙</p>
             {/* Photo */}
             <div className="h-28 rounded-xl mb-4 overflow-hidden">
               <div className="w-full h-full" style={{ background: "linear-gradient(135deg, oklch(0.88 0.05 75) 0%, oklch(0.82 0.07 55) 100%)" }} />
             </div>
             {/* Real journal text */}
             <p className="text-[12px] text-foreground/60 leading-relaxed">
-              Woke up before everyone else. The city was quiet — just pigeons and the smell of coffee from somewhere below. I sat by the window for almost an hour and didn&apos;t check my phone once.
+              okayyyy so today was A LOT. woke up late, spilled coffee on my shirt, missed the bus... but honestly?? the rest of the day was actually kinda good. had lunch outside and just sat there for like 20 mins doing nothing 🌿
             </p>
           </div>
         </div>
@@ -89,16 +89,16 @@ export default function LandingPage() {
             </div>
             <div className="p-6">
               {/* Title */}
-              <p className="font-serif text-base font-semibold text-foreground mb-1">First day in the mountains</p>
-              <p className="text-[10px] text-muted-foreground mb-5 uppercase tracking-wide">Saturday, May 24</p>
+              <p className="font-serif text-base font-semibold text-foreground mb-1">portugal day 3 ☀️</p>
+              <p className="text-[10px] text-muted-foreground mb-4 uppercase tracking-wide">Friday, May 24</p>
               {/* Text block */}
-              <p className="text-[11px] text-foreground/60 leading-relaxed mb-5">
-                The drive up took three hours but none of it felt long. Every turn had a different view.
+              <p className="text-[11px] text-foreground/60 leading-relaxed mb-4">
+                heyyyy okay so we got lost AGAIN but like in the best way possible?? ended up in this tiny street with flower pots everywhere
               </p>
               {/* Side-by-side: text + photo */}
               <div className="flex gap-3 mb-4">
                 <p className="flex-1 text-[11px] text-foreground/60 leading-relaxed">
-                  We stopped at a tiny café that had no menu — just whatever they made that morning. It was the best soup I&apos;ve ever had.
+                  found this little café, no menu, just vibes. sat there for two hours. i could honestly live here ngl 😭
                 </p>
                 <div className="w-24 h-20 rounded-lg shrink-0" style={{ background: "linear-gradient(135deg, oklch(0.88 0.05 75) 0%, oklch(0.80 0.08 55) 100%)" }} />
               </div>
